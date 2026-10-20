@@ -87,6 +87,7 @@
         :class="{
           'thread-composer-input-wrap--drag-active': isDragActive,
           'thread-composer-input-wrap--expanded': isComposerExpanded,
+          'thread-composer-input-wrap--tall': isComposerTall,
         }"
         @dragenter="onInputDragEnter"
         @dragover="onInputDragOver"
@@ -159,8 +160,21 @@
           @paste="onInputPaste"
         />
         <button
+          v-if="!isComposerExpanded"
+          class="thread-composer-expand thread-composer-height-toggle"
+          type="button"
+          :aria-label="isComposerTall ? t('Collapse editor') : t('Expand editor to 25 lines')"
+          :title="isComposerTall ? t('Collapse editor') : t('Expand editor to 25 lines')"
+          :aria-expanded="isComposerTall"
+          :disabled="isInteractionDisabled"
+          @click="toggleComposerTall"
+        >
+          <IconTablerChevronDown class="thread-composer-expand-icon" :class="{ 'thread-composer-height-toggle--open': isComposerTall }" />
+        </button>
+        <button
           v-if="hasExpandedComposerToggle"
           class="thread-composer-expand"
+          :class="{ 'thread-composer-fullscreen-toggle--offset': !isComposerExpanded }"
           type="button"
           :aria-label="isComposerExpanded ? t('Exit full screen composer') : t('Expand composer')"
           :title="isComposerExpanded ? t('Exit full screen composer') : t('Expand composer')"
@@ -439,6 +453,7 @@
 
 <script setup lang="ts">
 import { DEFAULT_PASTE_FILE_THRESHOLD } from '../../composables/pastePreferences'
+import IconTablerChevronDown from '../icons/IconTablerChevronDown.vue'
 import type { ZenModelMetadata } from '../../types/zenModels'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type {
@@ -639,6 +654,7 @@ const slashMentionStartIndex = ref<number | null>(null)
 const slashMentionQuery = ref('')
 const slashMentionHighlightedIndex = ref(0)
 const isComposerExpanded = ref(false)
+const isComposerTall = ref(false)
 const isDraftOverflowing = ref(false)
 let composerOverflowMeasurementQueued = false
 const draftGeneration = ref(0)
@@ -1191,6 +1207,13 @@ function queueComposerOverflowMeasurement(): void {
     composerOverflowMeasurementQueued = false
     updateComposerOverflowState()
   })
+}
+
+function toggleComposerTall(): void {
+  if (isInteractionDisabled.value) return
+  isComposerTall.value = !isComposerTall.value
+  queueComposerOverflowMeasurement()
+  void nextTick(() => inputRef.value?.focus())
 }
 
 function toggleComposerExpanded(): void {
@@ -2078,7 +2101,7 @@ watch(
 }
 
 .thread-composer:has(.thread-composer-input-wrap--expanded) {
-  @apply fixed inset-0 z-50 max-w-none bg-white/95 p-3 sm:p-6;
+  @apply fixed inset-0 z-[300] max-w-none bg-white/95 p-3 sm:p-6;
 }
 
 .thread-composer-shell {
@@ -2333,7 +2356,12 @@ watch(
 }
 
 .thread-composer-input {
-  @apply w-full min-w-0 min-h-10 sm:min-h-11 max-h-40 rounded-xl border-0 bg-transparent px-1 py-2 pr-10 text-sm text-zinc-900 outline-none transition resize-none overflow-y-auto;
+  @apply w-full min-w-0 min-h-10 sm:min-h-11 max-h-40 rounded-xl border-0 bg-transparent px-1 py-2 pr-20 text-sm text-zinc-900 outline-none transition resize-none overflow-y-auto;
+}
+
+.thread-composer-input-wrap--tall:not(.thread-composer-input-wrap--expanded) .thread-composer-input {
+  height: min(calc(25lh + 1rem), max(6rem, calc(100dvh - 16rem)));
+  max-height: none;
 }
 
 .thread-composer-input-wrap--expanded .thread-composer-input {
@@ -2350,6 +2378,14 @@ watch(
 
 .thread-composer-expand {
   @apply absolute right-0.5 top-0.5 inline-flex h-8 w-8 items-center justify-center rounded-full border-0 bg-zinc-100 text-zinc-500 shadow-sm transition hover:bg-zinc-200 hover:text-zinc-900 disabled:cursor-not-allowed disabled:text-zinc-400;
+}
+
+.thread-composer-fullscreen-toggle--offset {
+  right: 2.5rem;
+}
+
+.thread-composer-height-toggle--open {
+  transform: rotate(180deg);
 }
 
 .thread-composer-expand-icon {

@@ -31,6 +31,8 @@ const zhCN: Record<string, string> = {
   'Require ⌘ + enter to send': '需要 ⌘ + Enter 才发送',
   'Paste as file at (characters)': '粘贴为文件的字符阈值',
   'Pasted text at or above this many characters becomes a text file. Smaller pastes stay in the editor.': '达到或超过此字符数的粘贴文本将作为文本文件附加，较短文本保留在编辑器中。',
+  'Expand editor to 25 lines': '将编辑器展开至 25 行',
+  'Collapse editor': '收起编辑器',
   'When busy, send as': '忙碌时发送方式',
   'Steer': '引导',
   'Queue': '排队',
