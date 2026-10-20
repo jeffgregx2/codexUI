@@ -1930,3 +1930,23 @@
 }
 .composer-dropdown-option--detailed .composer-dropdown-option-label { overflow-wrap: anywhere; }
 .composer-dropdown-option--detailed .composer-dropdown-option-reason { grid-column: 1 / -1; }
+
+/* Composer preference controls share the settings surface in both themes. */
+.sidebar-settings-paste-row {
+  gap: 0.5rem;
+  cursor: default;
+}
+.sidebar-settings-paste-input {
+  width: 6rem;
+  flex-shrink: 0;
+  border: 1px solid #d4d4d8;
+  border-radius: 0.375rem;
+  background: #fff;
+  color: #18181b;
+  padding: 0.25rem 0.375rem;
+}
+:root.dark .sidebar-settings-paste-input {
+  border-color: #52525b;
+  background: #27272a;
+  color: #f4f4f5;
+}

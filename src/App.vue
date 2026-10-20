@@ -226,6 +226,19 @@
                 <span class="sidebar-settings-label">{{ t('Require ⌘ + enter to send') }}</span>
                 <span class="sidebar-settings-toggle" :class="{ 'is-on': !sendWithEnter }" />
               </button>
+              <label class="sidebar-settings-row sidebar-settings-paste-row" :title="t('Pasted text at or above this many characters becomes a text file. Smaller pastes stay in the editor.')">
+                <span class="sidebar-settings-label">{{ t('Paste as file at (characters)') }}</span>
+                <input
+                  class="sidebar-settings-paste-input"
+                  type="number"
+                  min="1"
+                  step="1"
+                  :aria-label="t('Paste as file at (characters)')"
+                  :value="pasteFileThreshold"
+                  @change="savePasteFileThreshold"
+                  @keydown.enter.prevent="savePasteFileThreshold"
+                />
+              </label>
               <button class="sidebar-settings-row" type="button" :title="SETTINGS_HELP.inProgressSendMode" @click="cycleInProgressSendMode">
                 <span class="sidebar-settings-label">{{ t('When busy, send as') }}</span>
                 <span class="sidebar-settings-value">{{ inProgressSendMode === 'steer' ? t('Steer') : t('Queue') }}</span>
@@ -954,6 +967,7 @@
                   :is-stop-pending="false"
                   :is-interrupting-turn="false" :send-with-enter="sendWithEnter" :in-progress-submit-mode="inProgressSendMode"
                   :dictation-click-to-toggle="dictationClickToToggle" :dictation-auto-send="dictationAutoSend"
+                  :paste-file-threshold="pasteFileThreshold"
                   :dictation-language="dictationLanguage"
                   @submit="onSubmitThreadMessage"
                   @update:selected-collaboration-mode="onSelectCollaborationMode"
@@ -1062,6 +1076,7 @@
                     :has-queue-above="selectedThreadQueuedMessages.length > 0"
                     :send-with-enter="sendWithEnter" :in-progress-submit-mode="inProgressSendMode"
                     :dictation-click-to-toggle="dictationClickToToggle" :dictation-auto-send="dictationAutoSend"
+                    :paste-file-threshold="pasteFileThreshold"
                     :dictation-language="dictationLanguage"
                     :thread-goal="selectedThreadGoal"
                     @update:selected-collaboration-mode="onSelectCollaborationMode"
@@ -1258,6 +1273,7 @@ import type { ComposerDraftPayload, ThreadComposerExposed } from './components/c
 import type { GitCommitFileChange, GitCommitOption, LocalDirectoryEntry, TelegramStatus, ThreadGoal, ThreadGoalStatus, ThreadTerminalQuickCommand, WorktreeBranchOption } from './api/codexGateway'
 import { getFreeModeStatus, setFreeMode, setFreeModeCustomKey, setCustomProvider } from './api/codexGateway'
 import { getPathLeafName, getPathParent, isProjectlessChatPath, normalizePathForUi } from './pathUtils.js'
+import { loadPasteFileThreshold, normalizePasteFileThreshold, PASTE_THRESHOLD_STORAGE_KEY } from './composables/pastePreferences'
 import { copyTextToClipboard } from './utils/clipboard'
 
 const ThreadConversation = defineAsyncComponent(() => import('./components/content/ThreadConversation.vue'))
@@ -1645,6 +1661,7 @@ const DICTATION_LANGUAGE_KEY = 'codex-web-local.dictation-language.v1'
 
 const CHAT_WIDTH_KEY = 'codex-web-local.chat-width.v1'
 const MOBILE_RESUME_RELOAD_MIN_HIDDEN_MS = 400
+const pasteFileThreshold = ref(loadPasteFileThreshold())
 const sendWithEnter = ref(loadBoolPref(SEND_WITH_ENTER_KEY, true))
 const inProgressSendMode = ref<'steer' | 'queue'>(loadInProgressSendModePref())
 const darkMode = ref<'system' | 'light' | 'dark'>(loadDarkModePref())
@@ -4394,6 +4411,17 @@ function loadChatWidthPref(): ChatWidthMode {
   if (typeof window === 'undefined') return 'standard'
   const value = window.localStorage.getItem(CHAT_WIDTH_KEY)
   return value === 'standard' || value === 'wide' || value === 'extra-wide' ? value : 'standard'
+}
+
+function savePasteFileThreshold(event: Event): void {
+  const input = event.target as HTMLInputElement
+  pasteFileThreshold.value = normalizePasteFileThreshold(input.value)
+  input.value = String(pasteFileThreshold.value)
+  try {
+    window.localStorage.setItem(PASTE_THRESHOLD_STORAGE_KEY, String(pasteFileThreshold.value))
+  } catch {
+    // Keep the preference usable when browser storage is unavailable.
+  }
 }
 
 function toggleSendWithEnter(): void {

@@ -438,6 +438,7 @@
 </template>
 
 <script setup lang="ts">
+import { DEFAULT_PASTE_FILE_THRESHOLD } from '../../composables/pastePreferences'
 import type { ZenModelMetadata } from '../../types/zenModels'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type {
@@ -507,6 +508,7 @@ const props = defineProps<{
   isUpdatingSpeedMode?: boolean
   disabled?: boolean
   hasQueueAbove?: boolean
+  pasteFileThreshold?: number
   sendWithEnter?: boolean
   inProgressSubmitMode?: 'steer' | 'queue'
   dictationClickToToggle?: boolean
@@ -571,7 +573,6 @@ type AttachmentBatchStats = {
 }
 
 const CONTEXT_WINDOW_BASELINE_TOKENS = 12000
-const PASTED_TEXT_FILE_THRESHOLD = 2000
 const PROMPT_OPTION_PREFIX = 'prompt:'
 
 const draft = ref('')
@@ -1602,7 +1603,7 @@ function onWindowDragCleanup(): void {
 function onInputPaste(event: ClipboardEvent): void {
   if (isInteractionDisabled.value) return
   const plainText = event.clipboardData?.getData('text/plain') ?? ''
-  if (plainText.length >= PASTED_TEXT_FILE_THRESHOLD) {
+  if (plainText.length >= (props.pasteFileThreshold ?? DEFAULT_PASTE_FILE_THRESHOLD)) {
     event.preventDefault()
     const textFile = new File([plainText], createPastedTextFileName(), {
       type: 'text/plain',
