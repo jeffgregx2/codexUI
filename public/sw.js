@@ -1,7 +1,9 @@
-const CACHE_NAME = 'codexweb-shell-v2'
-const APP_SHELL_PATHS = ['/', '/manifest.webmanifest']
+const APP_BASE = new URL(self.registration.scope).pathname
+const CACHE_PREFIX = `codexweb-shell:${APP_BASE}:`
+const CACHE_NAME = `${CACHE_PREFIX}v3`
+const APP_SHELL_PATHS = [APP_BASE, `${APP_BASE}manifest.webmanifest`]
 const STATIC_DESTINATIONS = new Set(['document', 'script', 'style', 'image', 'font'])
-const BYPASS_PREFIXES = ['/codex-api/', '/codex-local-image', '/codex-local-file', '/codex-local-browse/', '/codex-local-edit/']
+const BYPASS_PREFIXES = ['codex-api/', 'codex-local-image', 'codex-local-file', 'codex-local-browse/', 'codex-local-edit/'].map((path) => APP_BASE + path)
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -15,7 +17,7 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((keys) =>
       Promise.all(
         keys
-          .filter((key) => key !== CACHE_NAME)
+          .filter((key) => key.startsWith(CACHE_PREFIX) && key !== CACHE_NAME)
           .map((key) => caches.delete(key)),
       ),
     ),
@@ -29,6 +31,7 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(request.url)
   if (url.origin !== self.location.origin) return
+  if (!url.pathname.startsWith(APP_BASE)) return
   if (BYPASS_PREFIXES.some((prefix) => url.pathname.startsWith(prefix))) return
 
   if (request.mode === 'navigate') {
@@ -41,7 +44,7 @@ self.addEventListener('fetch', (event) => {
     return
   }
 
-  if (STATIC_DESTINATIONS.has(request.destination) || url.pathname === '/manifest.webmanifest') {
+  if (STATIC_DESTINATIONS.has(request.destination) || url.pathname === `${APP_BASE}manifest.webmanifest`) {
     event.respondWith(staleWhileRevalidate(request))
   }
 })
@@ -50,10 +53,10 @@ async function networkFirstNavigation(request) {
   const cache = await caches.open(CACHE_NAME)
   try {
     const response = await fetch(request)
-    cache.put('/', response.clone())
+    if (response.ok) cache.put(APP_BASE, response.clone())
     return response
   } catch {
-    return (await cache.match('/')) || Response.error()
+    return (await cache.match(APP_BASE)) || Response.error()
   }
 }
 

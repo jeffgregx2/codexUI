@@ -1,3 +1,5 @@
+
+import { appPath } from "../utils/appBasePath"
 import { computed, ref } from 'vue'
 
 const FEEDBACK_EMAIL = 'brutalstrikedevs@gmail.com'
@@ -233,7 +235,7 @@ export function installFeedbackDiagnostics(): void {
           const response = await originalFetch!(input, init)
           if (!response.ok) {
             recordFeedbackDiagnostic({
-              kind: url.includes('/codex-api/') ? 'api-response' : 'fetch-error',
+              kind: url.includes(appPath('/codex-api/')) ? 'api-response' : 'fetch-error',
               message: `Request failed with HTTP ${response.status}`,
               url,
               method,

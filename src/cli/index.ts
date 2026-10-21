@@ -414,7 +414,7 @@ function listenWithFallback(server: ReturnType<typeof createServer>, startPort: 
     const attempt = (port: number) => {
       const onError = (error: NodeJS.ErrnoException) => {
         server.off('listening', onListening)
-        if (error.code === 'EADDRINUSE' || error.code === 'EACCES') {
+        if (process.env.CODEXUI_STRICT_PORT !== '1' && (error.code === 'EADDRINUSE' || error.code === 'EACCES')) {
           attempt(port + 1)
           return
         }
@@ -427,7 +427,7 @@ function listenWithFallback(server: ReturnType<typeof createServer>, startPort: 
 
       server.once('error', onError)
       server.once('listening', onListening)
-      server.listen(port, '0.0.0.0')
+      server.listen(port, process.env.CODEXUI_HOST || '127.0.0.1')
     }
 
     attempt(startPort)

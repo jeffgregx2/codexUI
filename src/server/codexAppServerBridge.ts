@@ -1,4 +1,5 @@
 import { spawn, spawnSync, type ChildProcessWithoutNullStreams } from 'node:child_process'
+import { appPath } from '../utils/appBasePath.js'
 import { createHash, randomBytes, randomUUID } from 'node:crypto'
 import { mkdtemp, readFile, readdir, rename, rm, mkdir, stat, cp, lstat, readlink, symlink, realpath, utimes } from 'node:fs/promises'
 import { createReadStream, existsSync, readFileSync, statSync } from 'node:fs'
@@ -571,7 +572,7 @@ async function persistInlineDataUrlToLocalFile(dataUrl: string, baseName: string
 }
 
 function toLocalImageProxyUrl(path: string): string {
-  return `/codex-local-image?path=${encodeURIComponent(path)}`
+  return appPath(`/codex-local-image?path=${encodeURIComponent(path)}`)
 }
 
 const INLINE_IMAGE_FIELD_NAMES = new Set([
@@ -5218,7 +5219,7 @@ function extractLocalImagePathFromUrl(value: string): string | null {
   if (!value) return null
   try {
     const parsed = new URL(value, 'http://localhost')
-    if (parsed.pathname !== '/codex-local-image') return null
+    if (!['/codex-local-image', appPath('/codex-local-image')].includes(parsed.pathname)) return null
     const path = parsed.searchParams.get('path')?.trim() ?? ''
     return path.length > 0 ? path : null
   } catch {

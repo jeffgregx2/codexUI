@@ -8,6 +8,7 @@ import { createCodexBridgeMiddleware } from './codexAppServerBridge.js'
 import { createAuthSession } from './authMiddleware.js'
 import { createDirectoryListingHtml, createTextEditorHtml, decodeBrowsePath, getLocalDirectoryListing, isTextEditableFile, normalizeLocalPath } from './localBrowseUi.js'
 import { WebSocketServer, type WebSocket } from 'ws'
+import { appPath } from '../utils/appBasePath.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const distDir = join(__dirname, '..', 'dist')
@@ -44,9 +45,9 @@ function renderFrontendMissingHtml(message: string, details?: string[]): string 
     `<h1>${message}</h1>`,
     lines,
     '<p>Redirecting to chat in 3 seconds...</p>',
-    '<p><a href="/">Back to chat</a></p>',
+    `<p><a href="${appPath('/')}">Back to chat</a></p>`,
     '<script>',
-    'setTimeout(() => { window.location.assign("/") }, 3000)',
+    `setTimeout(() => { window.location.assign(${JSON.stringify(appPath('/'))}) }, 3000)`,
     '</script>',
     '</body>',
     '</html>',

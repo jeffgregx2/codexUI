@@ -1,0 +1,21 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Isolated TestChat prefix fixture</title></head>
+<body>
+<h1>TestChat — synthetic messages only</h1>
+<form id="send"><label>Message <textarea id="message" rows="4" cols="75"></textarea></label><button>Send fixture message</button></form>
+<main id="conversation" style="height:650px"></main>
+<script type="module">
+import { createApp, h, ref } from 'vue'
+import ThreadConversation from '/src/components/content/ThreadConversation.vue'
+import '/src/style.css'
+const messages = ref([])
+createApp({ setup: () => () => h(ThreadConversation, {
+  messages: messages.value, pendingRequests: [], liveOverlay: null,
+  isLoading: false, activeThreadId: 'isolated-testchat', cwd: '/srv/Projects/TestChat',
+}) }).mount('#conversation')
+document.querySelector('#send').addEventListener('submit', (event) => {
+  event.preventDefault()
+  messages.value = [{ id: 'testchat-prefix-marker', role: 'assistant',
+    text: document.querySelector('#message').value, messageType: 'agentMessage' }]
+})
+</script></body></html>

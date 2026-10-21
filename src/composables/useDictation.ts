@@ -1,3 +1,5 @@
+
+import { appPath } from "../utils/appBasePath"
 import { onBeforeUnmount, ref } from 'vue'
 
 export type DictationState = 'idle' | 'recording' | 'transcribing'
@@ -224,7 +226,7 @@ export function useDictation(options: {
       requestAbortController = new AbortController()
       transcribeAbortController = requestAbortController
 
-      const response = await fetch('/codex-api/transcribe', {
+      const response = await fetch(appPath('/codex-api/transcribe'), {
         method: 'POST',
         body: formData,
         signal: requestAbortController.signal,

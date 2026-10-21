@@ -1,4 +1,5 @@
 import { dirname, extname, join } from 'node:path'
+import { appPath } from '../utils/appBasePath.js'
 import { open, readFile, readdir, stat } from 'node:fs/promises'
 
 type DirectoryItem = {
@@ -134,13 +135,13 @@ function normalizeNewProjectName(value: string): string {
 function toBrowseHref(pathValue: string, newProjectName = ''): string {
   const normalizedName = normalizeNewProjectName(newProjectName)
   const query = normalizedName ? `?newProjectName=${encodeURIComponent(normalizedName)}` : ''
-  return `/codex-local-browse${encodeURI(pathValue)}${query}`
+  return appPath(`/codex-local-browse${encodeURI(pathValue)}${query}`)
 }
 
 function toEditHref(pathValue: string, newProjectName = ''): string {
   const normalizedName = normalizeNewProjectName(newProjectName)
   const query = normalizedName ? `?newProjectName=${encodeURIComponent(normalizedName)}` : ''
-  return `/codex-local-edit${encodeURI(pathValue)}${query}`
+  return appPath(`/codex-local-edit${encodeURI(pathValue)}${query}`)
 }
 
 function escapeForInlineScriptString(value: string): string {
@@ -331,7 +332,7 @@ export async function createDirectoryListingHtml(localPath: string, options?: { 
       button.disabled = true;
       status.textContent = statusText;
       try {
-        const response = await fetch('/codex-api/project-root', {
+        const response = await fetch(${JSON.stringify(appPath('/codex-api/project-root'))}, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -346,7 +347,7 @@ export async function createDirectoryListingHtml(localPath: string, options?: { 
           return;
         }
         status.textContent = 'Folder opened. Returning to Codex...';
-        const nextUrl = '/?openProjectPath=' + encodeURIComponent(path) + '#/';
+        const nextUrl = ${JSON.stringify(appPath('/?openProjectPath='))} + encodeURIComponent(path) + '#/';
         window.location.assign(nextUrl);
       } catch {
         status.textContent = errorText;

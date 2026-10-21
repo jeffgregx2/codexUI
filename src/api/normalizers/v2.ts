@@ -1,3 +1,5 @@
+
+import { appPath } from "../../utils/appBasePath"
 import type {
   Thread,
   ThreadItem,
@@ -74,17 +76,18 @@ function extractCodexUserRequestText(value: string): string {
 }
 
 function toLocalImageUrl(path: string): string {
-  return `/codex-local-image?path=${encodeURIComponent(path)}`
+  return appPath(`/codex-local-image?path=${encodeURIComponent(path)}`)
 }
 
 function toImageGenerationUrl(value: string): string {
   const trimmed = value.trim()
   if (!trimmed) return ''
+  if (trimmed.startsWith('/codex-local-image?')) return appPath(trimmed)
   if (
     trimmed.startsWith('data:') ||
     trimmed.startsWith('http://') ||
     trimmed.startsWith('https://') ||
-    trimmed.startsWith('/codex-local-image?')
+    trimmed.startsWith(appPath('/codex-local-image?'))
   ) {
     return trimmed
   }

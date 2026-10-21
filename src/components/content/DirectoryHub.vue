@@ -382,6 +382,8 @@
 </template>
 
 <script setup lang="ts">
+import { appPath } from "../../utils/appBasePath"
+
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import {
@@ -775,10 +777,10 @@ function showToast(text: string, type: 'success' | 'error' = 'success'): void {
 
 function localAssetSrc(path: string): string {
   if (!path) return ''
-  if (path.startsWith('connectors://')) return `/codex-api/connector-logo?src=${encodeURIComponent(path)}`
+  if (path.startsWith('connectors://')) return appPath(`/codex-api/connector-logo?src=${encodeURIComponent(path)}`)
   if (/^https?:\/\//i.test(path) || path.startsWith('data:')) return path
   if (!path.startsWith('/')) return ''
-  return `/codex-local-image?path=${encodeURIComponent(path)}`
+  return appPath(`/codex-local-image?path=${encodeURIComponent(path)}`)
 }
 
 function pluginIconSrc(plugin: DirectoryPluginSummary | null): string {

@@ -100,6 +100,8 @@
 </template>
 
 <script setup lang="ts">
+import { appPath } from "../../utils/appBasePath"
+
 import { computed, onMounted, ref, watch } from 'vue'
 import IconTablerChevronRight from '../icons/IconTablerChevronRight.vue'
 import SkillCard from './SkillCard.vue'
@@ -197,7 +199,7 @@ async function fetchSkills(): Promise<void> {
   isLoading.value = true
   error.value = ''
   try {
-    const resp = await fetch('/codex-api/skills-hub')
+    const resp = await fetch(appPath('/codex-api/skills-hub'))
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`)
     const data = (await resp.json()) as SkillsHubPayload
     applySkillsPayload(data)
@@ -221,7 +223,7 @@ async function searchSkills(): Promise<void> {
   skillSearchError.value = ''
   try {
     const params = new URLSearchParams({ q: query })
-    const resp = await fetch(`/codex-api/skills-hub/search?${params}`)
+    const resp = await fetch(appPath(`/codex-api/skills-hub/search?${params}`))
     const data = (await resp.json()) as SkillsSearchPayload
     if (!resp.ok) throw new Error(data.error || `HTTP ${resp.status}`)
     const installedByName = new Map(installedSkills.value.map((skill) => [skill.name, skill]))
@@ -244,7 +246,7 @@ async function handleInstall(skill: HubSkill): Promise<void> {
   actionSkillKey.value = `${skill.owner}/${skill.name}`
   isInstallActionInFlight.value = true
   try {
-    const resp = await fetch('/codex-api/skills-hub/install', {
+    const resp = await fetch(appPath('/codex-api/skills-hub/install'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ owner: skill.owner, name: skill.name, source: skill.source }),
@@ -272,7 +274,7 @@ async function handleUninstall(skill: HubSkill): Promise<void> {
   actionSkillKey.value = `${skill.owner}/${skill.name}`
   isUninstallActionInFlight.value = true
   try {
-    const resp = await fetch('/codex-api/skills-hub/uninstall', {
+    const resp = await fetch(appPath('/codex-api/skills-hub/uninstall'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name: skill.name, path: skill.path }),
@@ -292,7 +294,7 @@ async function handleUninstall(skill: HubSkill): Promise<void> {
 
 async function handleToggleEnabled(skill: HubSkill, enabled: boolean): Promise<void> {
   try {
-    const resp = await fetch('/codex-api/rpc', {
+    const resp = await fetch(appPath('/codex-api/rpc'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ method: 'skills/config/write', params: { path: skill.path, enabled } }),

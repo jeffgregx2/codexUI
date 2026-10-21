@@ -1206,6 +1206,8 @@
 </template>
 
 <script setup lang="ts">
+import { appPath } from "./utils/appBasePath"
+
 import { computed, defineAsyncComponent, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import DesktopLayout from './components/layout/DesktopLayout.vue'
@@ -2902,7 +2904,7 @@ function onBrowseThreadFiles(threadId: string): void {
     }
   }
   if (!targetCwd || typeof window === 'undefined') return
-  window.open(`/codex-local-browse${encodeURI(targetCwd)}`, '_blank', 'noopener,noreferrer')
+  window.open(appPath(`/codex-local-browse${encodeURI(targetCwd)}`), '_blank', 'noopener,noreferrer')
 }
 
 function getProjectCwd(projectName: string): string {
@@ -2934,7 +2936,7 @@ function toWorktreeFolderNameDraft(projectName: string): string {
 function onBrowseProjectFiles(projectName: string): void {
   const targetCwd = getProjectCwd(projectName)
   if (!targetCwd || typeof window === 'undefined') return
-  window.open(`/codex-local-browse${encodeURI(targetCwd)}`, '_blank', 'noopener,noreferrer')
+  window.open(appPath(`/codex-local-browse${encodeURI(targetCwd)}`), '_blank', 'noopener,noreferrer')
 }
 
 async function onSaveProject(projectName: string): Promise<void> {

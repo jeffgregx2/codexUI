@@ -1,4 +1,5 @@
 import { defineConfig } from "vite";
+import { normalizeBasePath } from "./src/utils/appBasePath";
 import vue from "@vitejs/plugin-vue";
 import { createCodexBridgeMiddleware } from "./src/server/codexAppServerBridge";
 import { createDirectoryListingHtml, createTextEditorHtml, decodeBrowsePath, getLocalDirectoryListing, isTextEditableFile, normalizeLocalPath } from "./src/server/localBrowseUi";
@@ -103,6 +104,7 @@ function resolveViteRollbackDebugFallback(): string {
 const viteRollbackDebugFallback = resolveViteRollbackDebugFallback();
 
 export default defineConfig({
+  base: normalizeBasePath(process.env.CODEXUI_BASE_PATH || '/'),
   define: {
     "import.meta.env.VITE_WORKTREE_NAME": JSON.stringify(worktreeName),
     "import.meta.env.VITE_APP_VERSION": JSON.stringify(appVersion),

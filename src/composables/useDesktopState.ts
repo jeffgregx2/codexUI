@@ -1,3 +1,5 @@
+
+import { appPath } from "../utils/appBasePath"
 import type { ZenModelMetadata } from '../types/zenModels'
 import { computed, ref } from 'vue'
 import {
@@ -1485,7 +1487,7 @@ export function useDesktopState() {
   function extractLocalImagePathFromUrl(value: string): string {
     try {
       const parsed = new URL(value, 'http://localhost')
-      if (parsed.pathname !== '/codex-local-image') return ''
+      if (!['/codex-local-image', appPath('/codex-local-image')].includes(parsed.pathname)) return ''
       return parsed.searchParams.get('path')?.trim() ?? ''
     } catch {
       return ''
@@ -3535,17 +3537,18 @@ export function useDesktopState() {
   }
 
   function toLocalImageUrl(path: string): string {
-    return `/codex-local-image?path=${encodeURIComponent(path)}`
+    return appPath(`/codex-local-image?path=${encodeURIComponent(path)}`)
   }
 
   function toImageGenerationUrl(value: string): string {
     const trimmed = value.trim()
     if (!trimmed) return ''
+    if (trimmed.startsWith('/codex-local-image?')) return appPath(trimmed)
     if (
       trimmed.startsWith('data:') ||
       trimmed.startsWith('http://') ||
       trimmed.startsWith('https://') ||
-      trimmed.startsWith('/codex-local-image?')
+      trimmed.startsWith(appPath('/codex-local-image?'))
     ) {
       return trimmed
     }
