@@ -66,6 +66,8 @@ npx @brutalstrikedevs/codexapp
 
 Maintainers: follow [the npm publishing procedure](docs/publishing.md) to release `@brutalstrikedevs/codexapp`.
 
+Project management architecture and phased implementation: [Project registry and management design](docs/project-registry-design.md).
+
 ### Windows 🪟 (PowerShell)
 ```powershell
 node -v   # 18+
