@@ -567,6 +567,7 @@
               :empty-label="t('No commands')"
               @update:model-value="onSelectHeaderTerminalCommand"
             />
+            <HeaderUsageStatus :quota="codexQuota" />
             <HeaderGitBranchDropdown
               v-if="canShowContentHeaderBranchDropdown"
               class="content-header-branch-dropdown"
@@ -1219,6 +1220,7 @@ import QueuedMessages from './components/content/QueuedMessages.vue'
 import RateLimitStatus from './components/content/RateLimitStatus.vue'
 import ComposerDropdown from './components/content/ComposerDropdown.vue'
 import HeaderGitBranchDropdown from './components/content/HeaderGitBranchDropdown.vue'
+import HeaderUsageStatus from './components/content/HeaderUsageStatus.vue'
 import ComposerRuntimeDropdown from './components/content/ComposerRuntimeDropdown.vue'
 import SidebarThreadControls from './components/sidebar/SidebarThreadControls.vue'
 import IconTablerBolt from './components/icons/IconTablerBolt.vue'

@@ -1950,3 +1950,44 @@
   background: #27272a;
   color: #f4f4f5;
 }
+
+/* Header usage is shared across route surfaces and both themes. */
+.header-usage-status { position: relative; }
+.header-usage-trigger {
+  display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.375rem 0.5rem;
+  border: 1px solid #e4e4e7; border-radius: 999px; background: #fff; color: #52525b;
+  cursor: pointer; font-size: 0.6875rem; line-height: 1.25;
+}
+.header-usage-trigger:hover { background: #f4f4f5; }
+.header-usage-trigger:focus-visible { outline: 2px solid #6366f1; outline-offset: 2px; }
+.header-usage-summary { display: flex; gap: 0.625rem; }
+.header-usage-metric { display: inline-flex; gap: 0.25rem; white-space: nowrap; }
+.header-usage-metric strong { font-weight: 600; }
+.header-usage-metric.is-low { color: #b45309; }
+.header-usage-chevron { width: 0.75rem; height: 0.75rem; flex-shrink: 0; }
+.header-usage-panel {
+  position: fixed; z-index: 400; width: min(22rem, calc(100vw - 1rem)); max-height: calc(100dvh - 1rem);
+  overflow-y: auto; border: 1px solid #e4e4e7; border-radius: 0.75rem; padding: 0.875rem;
+  background: #fff; color: #27272a; box-shadow: 0 12px 30px #0002; font-size: 0.75rem;
+}
+.header-usage-heading, .header-usage-window-heading { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; }
+.header-usage-heading { font-size: 0.875rem; }
+.header-usage-plan { text-transform: capitalize; color: #71717a; }
+.header-usage-window { margin-top: 0.875rem; padding-top: 0.75rem; border-top: 1px solid #e4e4e7; }
+.header-usage-track { height: 0.375rem; overflow: hidden; border-radius: 999px; background: #e4e4e7; margin: 0.5rem 0; }
+.header-usage-track span { display: block; height: 100%; background: #6366f1; border-radius: inherit; }
+.header-usage-details { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0.25rem 0.75rem; margin: 0.5rem 0 0; }
+.header-usage-details dt { color: #71717a; }
+.header-usage-details dd { margin: 0; text-align: right; overflow-wrap: anywhere; }
+.header-usage-note { margin: 0.75rem 0 0; color: #71717a; line-height: 1.5; }
+:root.dark .header-usage-trigger { background: #18181b; border-color: #3f3f46; color: #d4d4d8; }
+:root.dark .header-usage-trigger:hover { background: #27272a; }
+:root.dark .header-usage-panel { background: #18181b; border-color: #3f3f46; color: #f4f4f5; }
+:root.dark .header-usage-window { border-color: #3f3f46; }
+:root.dark .header-usage-track { background: #3f3f46; }
+:root.dark .header-usage-plan, :root.dark .header-usage-details dt, :root.dark .header-usage-note { color: #a1a1aa; }
+:root.dark .header-usage-metric.is-low { color: #fbbf24; }
+@media (max-width: 639px) {
+  .header-usage-trigger { padding: 0.25rem 0.375rem; gap: 0.25rem; font-size: 0.625rem; }
+  .header-usage-summary { flex-direction: column; gap: 0.125rem; }
+}
